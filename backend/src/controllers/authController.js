@@ -9,7 +9,8 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Email y contraseña requeridos' });
 
     const user = await User.findOne({ where: { email }, include: [Role] });
-    if (!user || !user.active)
+    if (!user)
+  return res.status(401).json({ message: 'Credenciales inválidas' });
       return res.status(401).json({ message: 'Credenciales inválidas' });
 
     const valid = await bcrypt.compare(password, user.password);
