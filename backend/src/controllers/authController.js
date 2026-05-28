@@ -28,6 +28,7 @@ exports.login = async (req, res) => {
       user: { id: user.id, name: user.name, email: user.email, role: user.Role.name }
     });
   } catch (e) {
+    console.error('Login error:', e.message, e.stack);
     res.status(500).json({ message: 'Error del servidor', error: e.message });
   }
 };
