@@ -11,10 +11,13 @@ const PORT = process.env.PORT || 4000;
 
 // Middlewares
 app.use(cors({
-  origin: [process.env.FRONTEND_URL || 'http://localhost:5173', 'https://*.vercel.app'],
+  origin: [
+    process.env.FRONTEND_URL || 'http://localhost:5173',
+    'https://*.vercel.app',
+    'https://*.netlify.app'
+  ],
   credentials: true
 }));
-app.use(express.json());
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
