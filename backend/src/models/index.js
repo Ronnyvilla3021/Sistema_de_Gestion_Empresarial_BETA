@@ -83,6 +83,38 @@ const ActivityLog = sequelize.define('ActivityLog', {
   details: { type: DataTypes.TEXT }
 }, { updatedAt: false });
 
+exports.login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password)
+      return res.status(400).json({ message: 'Email y contraseña requeridos' });
+
+    const user = await User.findOne({ where: { email }, include: [Role] });
+    console.log('User found:', user ? user.email : 'NOT FOUND');
+    if (!user)
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+
+    const valid = await bcrypt.compare(password, user.password);
+    console.log('Password valid:', valid);
+    if (!valid)
+      return res.status(401).json({ message: 'Credenciales inválidas' });
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.Role.name },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
+    res.json({
+      token,
+      user: { id: user.id, name: user.name, email: user.email, role: user.Role.name }
+    });
+  } catch (e) {
+    console.error('Login error:', e.message);
+    res.status(500).json({ message: 'Error del servidor', error: e.message });
+  }
+};
+
 // ─── RELACIONES ──────────────────────────────────────────────────────────────
 
 Role.hasMany(User, { foreignKey: 'roleId' });
