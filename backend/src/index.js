@@ -35,8 +35,17 @@ const start = async () => {
   try {
     await sequelize.authenticate();
     console.log('✅ Base de datos conectada');
-    await sequelize.sync({ alter: true }); // Crea/actualiza tablas automáticamente
+    await sequelize.sync({ alter: true });
     console.log('✅ Tablas sincronizadas');
+    
+    // Ejecutar seeder si no hay usuarios
+    const { User } = require('./models');
+const count = await User.count();
+if (count === 0) {
+  const seed = require('./seeders/seed');
+  await seed();
+}
+    
     app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
   } catch (err) {
     console.error('❌ Error al iniciar:', err.message);
