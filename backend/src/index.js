@@ -21,6 +21,17 @@ app.use(cors({
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date() }));
 
+app.get('/run-seed', async (req, res) => {
+  try {
+    const seed = require('./seeders/seed');
+    await seed();
+    res.json({ message: 'Seed ejecutado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // API Routes
 app.use('/api', routes);
 
